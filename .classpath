@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="Web_Lab_5_1/src"/>
+	<classpathentry kind="output" path="Web_Lab_5_1/out/production/Web_Lab_5_1"/>
+</classpath>
