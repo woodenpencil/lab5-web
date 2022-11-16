@@ -18,6 +18,7 @@ public class Server {
                 Socket socket = server.accept();
                 try {
                     serverList.add(new ServerFoo(socket)); 
+                    System.out.println("Accepted new socket");
                 } catch (IOException e) {
                     System.out.println(e);
                     //socket.close();

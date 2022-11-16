@@ -28,18 +28,25 @@ class ServerFoo extends Thread {
             word = in.readLine();
             try {
                 out.write(word + "\n");
+                System.out.print(word+"\n");
                 out.flush();
             } catch (IOException e) {
                 System.out.println(e);
             }
             try {
                 do {
-                    Scanner sc = new Scanner(new File("C:/Users/user/IdeaProjects/Web_Lab_5_1/src/input.txt"));
-                    while (sc.hasNext()) {
-                        System.out.println(sc.nextLine());
-                    }
-                    System.out.println("Choose client index");
-                    Server.serverList.get(new Scanner(System.in).nextInt()).send(msg);
+                	System.out.print("waiting for message.../n");
+                	word = in.readLine();
+                	int id = Character.getNumericValue(word.charAt(0));
+                	String msg = word.substring(1);
+                	System.out.print(id+"/n");
+                	Server.serverList.get(id).send(msg);
+                    //Scanner sc = new Scanner(new File("C:/Users/Win10/Desktop/web/Ырср 5.1/Web_Lab_5_1/src/input.txt"));
+                    //while (sc.hasNext()) {
+                    //    System.out.println(sc.nextLine());
+                    //}
+                    //System.out.println("Choose client index");
+                    //Server.serverList.get(new Scanner(System.in).nextInt()).send(msg);
                 } while (true);
             } catch (NullPointerException e) {
                 System.out.println(e);
@@ -58,7 +65,9 @@ class ServerFoo extends Thread {
             System.out.println(e);
         }
     }
-
+    //private void redirectToClient(int id, String msg) {
+    //	Server.serverList.get(id).send(msg);
+    //}
     private void downService() {
         try {
             if (!socket.isClosed()) {

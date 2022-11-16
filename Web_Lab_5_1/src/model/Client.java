@@ -8,7 +8,7 @@ public class Client {
     //public static int port = 8080;
  
     public static void main(String[] args) throws IOException {
-        File file = new File("C:/Users/user/IdeaProjects/Web_Lab_5_1/src/input.txt");
+        File file = new File("C:/Users/Win10/Desktop/web/Ырср 5.1/Web_Lab_5_1/src/input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         FileWriter fr = new FileWriter(file, true);
         BufferedWriter bw = new BufferedWriter(fr);
@@ -18,7 +18,6 @@ public class Client {
             while ((st = br.readLine()) != null) {
                 i = Integer.parseInt(st.trim());
             }
-
             i++;
             bw.newLine();
             bw.write(String.valueOf(i));

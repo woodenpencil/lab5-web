@@ -37,7 +37,7 @@ class ClientFoo {
         System.out.print("Enter name: ");
         try {
             name = inputUser.readLine();
-            out.write("Nice to  see you, " + name + "!\n");
+            out.write("Nice to see you, " + name + "!\n");
             out.flush();
             System.out.println("Entered name: " + name);
         } catch (IOException e) {
@@ -63,15 +63,22 @@ class ClientFoo {
         @Override
         public void run() {
             String str;
+            String word;
             try {
                 while (true) {
+                	System.out.print("waiting for message.../n");
+                	word = in.readLine();
+                	System.out.print(word+"\n");
+                	System.out.print("Input message:/n");
                     str = inputUser.readLine();
+                    
                     if (str.equalsIgnoreCase("x")) {
                         System.out.println("You are going to leave us.");
                         ClientFoo.this.downService();
                         break;
-                    }
-                    System.out.println(name + " received: " + str);
+                    }//System.out.println(name + " received: " + str);
+                    out.write(word);
+                    out.flush();
                 }
             } catch (IOException e) {
                 System.out.println(e);
