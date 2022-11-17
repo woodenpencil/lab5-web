@@ -14,10 +14,12 @@ public class Server {
         ServerSocket server = new ServerSocket(8080);
         System.out.println("Server is working");
         try {
+        	int i =0;
             while (true) {
                 Socket socket = server.accept();
                 try {
-                    serverList.add(new ServerFoo(socket)); 
+                    serverList.add(new ServerFoo(socket, i));
+                    i++;
                     System.out.println("Accepted new socket");
                 } catch (IOException e) {
                     System.out.println(e);

@@ -9,7 +9,7 @@ class ClientFoo {
     private BufferedReader in;
     private BufferedWriter out;
     private BufferedReader inputUser;
-    private String name;
+    private String msg;
 
     public ClientFoo(String addr, int port) {
         try {
@@ -26,7 +26,9 @@ class ClientFoo {
                 out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             }
             this.pressNickname();
-            new ReadMsg().start();
+        	//String word = in.readLine();
+        	//System.out.print(word+"\n");
+            new readMsg().start();
         } catch (IOException e) {
             System.out.println(e);
             ClientFoo.this.downService();
@@ -34,16 +36,15 @@ class ClientFoo {
     }
 
     private void pressNickname() {
-        System.out.print("Enter name: ");
+        System.out.print("Enter id of reciever and message: ");
         try {
-            name = inputUser.readLine();
-            out.write("Nice to see you, " + name + "!\n");
+            msg = inputUser.readLine();
+            out.write(msg+"\n");
             out.flush();
-            System.out.println("Entered name: " + name);
+            //System.out.println("Entered name: " + name);
         } catch (IOException e) {
             System.out.println(e);
         }
-
     }
 
     private void downService() {
@@ -59,26 +60,25 @@ class ClientFoo {
         }
     }
 
-    private class ReadMsg extends Thread {
+    private class readMsg extends Thread {
         @Override
         public void run() {
             String str;
-            String word;
             try {
                 while (true) {
-                	System.out.print("waiting for message.../n");
-                	word = in.readLine();
-                	System.out.print(word+"\n");
-                	System.out.print("Input message:/n");
-                    str = inputUser.readLine();
-                    
+                	System.out.println("waiting for messages:");
+                	str = in.readLine();
+                	System.out.println(str);
+                	/*
+                	str = inputUser.readLine();
+                    out.write(str);
+                    out.flush();
                     if (str.equalsIgnoreCase("x")) {
                         System.out.println("You are going to leave us.");
                         ClientFoo.this.downService();
                         break;
-                    }//System.out.println(name + " received: " + str);
-                    out.write(word);
-                    out.flush();
+                    }
+                    */
                 }
             } catch (IOException e) {
                 System.out.println(e);

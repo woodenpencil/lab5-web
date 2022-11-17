@@ -7,15 +7,17 @@ import java.util.Scanner;
 
 class ServerFoo extends Thread {
     private Socket socket;
+    private int id;
 
     private BufferedReader in;
 
     private BufferedWriter out;
 
-    private String msg="Big thank you for joining us from server!";
+    //private String msg="Big thank you for joining us from server!";
 
-    public ServerFoo(Socket socket) throws IOException {
+    public ServerFoo(Socket socket, int id) throws IOException {
         this.socket = socket;
+        this.id = id;
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         start();
@@ -25,28 +27,18 @@ class ServerFoo extends Thread {
     public void run() {
         String word;
         try {
-            word = in.readLine();
-            try {
-                out.write(word + "\n");
-                System.out.print(word+"\n");
-                out.flush();
-            } catch (IOException e) {
-                System.out.println(e);
-            }
             try {
                 do {
-                	System.out.print("waiting for message.../n");
+                	System.out.println("waiting for message...");
                 	word = in.readLine();
-                	int id = Character.getNumericValue(word.charAt(0));
-                	String msg = word.substring(1);
-                	System.out.print(id+"/n");
-                	Server.serverList.get(id).send(msg);
-                    //Scanner sc = new Scanner(new File("C:/Users/Win10/Desktop/web/Ырср 5.1/Web_Lab_5_1/src/input.txt"));
-                    //while (sc.hasNext()) {
-                    //    System.out.println(sc.nextLine());
-                    //}
-                    //System.out.println("Choose client index");
-                    //Server.serverList.get(new Scanner(System.in).nextInt()).send(msg);
+                	System.out.println(word+"(from "+this.id+")");
+                	int rec =  Character.getNumericValue(word.charAt(0));
+                	String msg = word.substring(2);
+                	System.out.println("sending "+msg+" to "+rec);
+                	Server.serverList.get(rec).send(this.id, msg);
+                	//out.write(word+"\n");
+                	//out.flush();
+                	
                 } while (true);
             } catch (NullPointerException e) {
                 System.out.println(e);
@@ -57,17 +49,14 @@ class ServerFoo extends Thread {
         }
     }
 
-    private void send(String msg) {
+    public void send(int sender, String msg) {
         try {
-            out.write(msg + "\n");
+            out.write(msg + "(from "+sender+")\n");
             out.flush();
         } catch (IOException e) {
             System.out.println(e);
         }
     }
-    //private void redirectToClient(int id, String msg) {
-    //	Server.serverList.get(id).send(msg);
-    //}
     private void downService() {
         try {
             if (!socket.isClosed()) {
