@@ -7,9 +7,15 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 public class Server {
-
+	/**
+	 * List for parallel working threads serving connected clients
+	 */
     public static LinkedList<ServerFoo> serverList = new LinkedList<>();
-
+    /**
+     * Launch server
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(8080);
         System.out.println("Server is working");

@@ -10,7 +10,11 @@ class ClientFoo {
     private BufferedWriter out;
     private BufferedReader inputUser;
     private String msg;
-
+    /**
+     * Constructor for client
+     * @param addr
+     * @param port
+     */
     public ClientFoo(String addr, int port) {
         try {
             this.socket = new Socket(addr, port);
@@ -25,7 +29,7 @@ class ClientFoo {
             if (socket != null) {
                 out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             }
-            this.pressNickname();
+            this.sendMsg();
         	//String word = in.readLine();
         	//System.out.print(word+"\n");
             new readMsg().start();
@@ -34,8 +38,10 @@ class ClientFoo {
             ClientFoo.this.downService();
         }
     }
-
-    private void pressNickname() {
+    /**
+     * Send message to another client
+     */
+    private void sendMsg() {
         System.out.print("Enter id of reciever and message: ");
         try {
             msg = inputUser.readLine();
@@ -46,7 +52,9 @@ class ClientFoo {
             System.out.println(e);
         }
     }
-
+    /**
+     * Disables client
+     */
     private void downService() {
         try {
             if (!socket.isClosed()) {
@@ -59,7 +67,11 @@ class ClientFoo {
             System.out.println(e);
         }
     }
-
+    /**
+     * Read message from another client
+     * @author anton
+     *
+     */
     private class readMsg extends Thread {
         @Override
         public void run() {

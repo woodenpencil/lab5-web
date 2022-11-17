@@ -14,7 +14,12 @@ class ServerFoo extends Thread {
     private BufferedWriter out;
 
     //private String msg="Big thank you for joining us from server!";
-
+    /**
+     * Constructor for serving class
+     * @param socket
+     * @param id
+     * @throws IOException
+     */
     public ServerFoo(Socket socket, int id) throws IOException {
         this.socket = socket;
         this.id = id;
@@ -22,7 +27,9 @@ class ServerFoo extends Thread {
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         start();
     }
-
+    /**
+     * Accepting incoming messages and redirecting it to recievers.
+     */
     @Override
     public void run() {
         String word;
@@ -48,7 +55,11 @@ class ServerFoo extends Thread {
             this.downService();
         }
     }
-
+    /**
+     * Send accepted message to defined reciever
+     * @param sender
+     * @param msg
+     */
     public void send(int sender, String msg) {
         try {
             out.write(msg + "(from "+sender+")\n");
@@ -57,6 +68,9 @@ class ServerFoo extends Thread {
             System.out.println(e);
         }
     }
+    /**
+     * Disables current server
+     */
     private void downService() {
         try {
             if (!socket.isClosed()) {
