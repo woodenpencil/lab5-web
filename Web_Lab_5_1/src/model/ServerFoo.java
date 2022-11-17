@@ -1,19 +1,23 @@
 package model;
 
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
 
 class ServerFoo extends Thread {
     private Socket socket;
     private int id;
 
-    private BufferedReader in;
+    private InputStream in;
+    private OutputStream out;
 
-    private BufferedWriter out;
-
-    //private String msg="Big thank you for joining us from server!";
+    private BufferedReader inSymbol;
+    private BufferedWriter outSymbol;
     /**
      * Constructor for serving class
      * @param socket
@@ -23,8 +27,8 @@ class ServerFoo extends Thread {
     public ServerFoo(Socket socket, int id) throws IOException {
         this.socket = socket;
         this.id = id;
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
         start();
     }
     /**
@@ -36,15 +40,26 @@ class ServerFoo extends Thread {
         try {
             try {
                 do {
-                	System.out.println("waiting for message...");
-                	word = in.readLine();
+                	System.out.println("Reading: " + System.currentTimeMillis());
+
+                    byte[] sizeAr = new byte[4];
+                    in.read(sizeAr);
+                    int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+
+                    byte[] imageAr = new byte[size];
+                    in.read(imageAr);
+
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+
+                    System.out.println("Received " + image.getHeight() + "x" + image.getWidth() + ": " + System.currentTimeMillis());
+
+                    /*
+                	word = inSymbol.readLine();
                 	System.out.println(word+"(from "+this.id+")");
-                	int rec =  Character.getNumericValue(word.charAt(0));
-                	String msg = word.substring(2);
-                	System.out.println("sending "+msg+" to "+rec);
-                	Server.serverList.get(rec).send(this.id, msg);
-                	//out.write(word+"\n");
-                	//out.flush();
+                	int rec =  Integer.parseInt(word);
+                	System.out.println("sending to "+rec);
+                	*/
+                	Server.serverList.get(0).send(this.id, image);
                 	
                 } while (true);
             } catch (NullPointerException e) {
@@ -60,10 +75,16 @@ class ServerFoo extends Thread {
      * @param sender
      * @param msg
      */
-    public void send(int sender, String msg) {
+    public void send(int sender, BufferedImage image) {
         try {
-            out.write(msg + "(from "+sender+")\n");
+        	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", byteArrayOutputStream);
+
+            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+            out.write(size);
+            out.write(byteArrayOutputStream.toByteArray());
             out.flush();
+            System.out.println("Flushed: " + System.currentTimeMillis());
         } catch (IOException e) {
             System.out.println(e);
         }

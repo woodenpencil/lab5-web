@@ -1,21 +1,28 @@
 package model;
 
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 
 class ClientFoo {
     private Socket socket;
-    private BufferedReader in;
-    private BufferedWriter out;
+    private InputStream in;
+    private OutputStream out;
+    private BufferedReader inSymbol;
+    private BufferedWriter outSymbol;
     private BufferedReader inputUser;
     private String msg;
+    
     /**
      * Constructor for client
      * @param addr
      * @param port
      */
-    public ClientFoo(String addr, int port) {
+    public ClientFoo(String addr, int port, String path) {
         try {
             this.socket = new Socket(addr, port);
         } catch (IOException e) {
@@ -23,13 +30,16 @@ class ClientFoo {
         }
         try {
             inputUser = new BufferedReader(new InputStreamReader(System.in));
+            
             if (socket != null) {
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            }
+                in = socket.getInputStream();
+                inSymbol = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                }
             if (socket != null) {
-                out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                out = socket.getOutputStream();
+                outSymbol = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             }
-            this.sendMsg();
+            this.sendMsg(path);
         	//String word = in.readLine();
         	//System.out.print(word+"\n");
             new readMsg().start();
@@ -41,14 +51,26 @@ class ClientFoo {
     /**
      * Send message to another client
      */
-    private void sendMsg() {
-        System.out.print("Enter id of reciever and message: ");
+    private void sendMsg(String path) {
         try {
-            msg = inputUser.readLine();
-            out.write(msg+"\n");
+        	BufferedImage image = ImageIO.read(new File(path));
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", byteArrayOutputStream);
+
+            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+            out.write(size);
+            out.write(byteArrayOutputStream.toByteArray());
             out.flush();
-            //System.out.println("Entered name: " + name);
-        } catch (IOException e) {
+            System.out.println("Flushed: " + System.currentTimeMillis());
+            
+            /*
+            String rec = inputUser.readLine();
+            String rec = "0";
+            outSymbol.write(rec+"\n");
+            outSymbol.flush();
+			*/
+        	} catch (IOException e) {
             System.out.println(e);
         }
     }
@@ -69,28 +91,30 @@ class ClientFoo {
     }
     /**
      * Read message from another client
-     * @author anton
      *
      */
     private class readMsg extends Thread {
         @Override
         public void run() {
-            String str;
             try {
                 while (true) {
-                	System.out.println("waiting for messages:");
-                	str = in.readLine();
-                	System.out.println(str);
-                	/*
-                	str = inputUser.readLine();
-                    out.write(str);
-                    out.flush();
-                    if (str.equalsIgnoreCase("x")) {
-                        System.out.println("You are going to leave us.");
-                        ClientFoo.this.downService();
-                        break;
-                    }
-                    */
+                	System.out.println("Reading: " + System.currentTimeMillis());
+
+                    byte[] sizeAr = new byte[4];
+                    in.read(sizeAr);
+                    int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+
+                    byte[] imageAr = new byte[size];
+                    in.read(imageAr);
+
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+
+                    System.out.println("Received " + image.getHeight() + "x" + image.getWidth() + ": " + System.currentTimeMillis());
+                    ImageIO.write(image, "jpg", new File("recieved_image.jpg"));
+                    
+                    
+                    
+                    //int sender = Integer.parseInt(inSymbol.read());
                 }
             } catch (IOException e) {
                 System.out.println(e);
