@@ -1,0 +1,3 @@
+2022-11-26 21:25:43 [main] INFO  Client.Client - Locale set to en_EN
+2022-11-26 21:31:44 [main] INFO  Client.Client - Locale set to en_EN
+2022-11-26 21:34:58 [nioEventLoopGroup-2-1] INFO  Server.BootstrapServer - Server bound
